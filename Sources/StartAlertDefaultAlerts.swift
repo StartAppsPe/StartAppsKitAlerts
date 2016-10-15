@@ -6,9 +6,10 @@
 //  Copyright © 2016 Universidad de Lima. All rights reserved.
 //
 
-import Foundation
-
 #if os(iOS)
+    
+import Foundation
+import StartAppsKitExtensions
 
 public extension StartAlert {
     

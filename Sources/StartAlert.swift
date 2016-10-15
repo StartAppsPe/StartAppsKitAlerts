@@ -9,6 +9,7 @@
 #if os(iOS)
 
 import UIKit
+import StartAppsKitExtensions
 
 public class StartAlert {
     
