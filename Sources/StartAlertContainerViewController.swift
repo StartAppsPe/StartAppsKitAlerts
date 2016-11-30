@@ -233,14 +233,10 @@ open class StartAlertContainerViewController: UIViewController {
     open func setMoveToHidden() {
         switch alert.animation {
         case .top:
-            print("Y = \(innerView.frame.origin.y)")
-            print("H = \(innerView.frame.size.height)")
             let transformY = -(innerView.frame.origin.y+innerView.frame.size.height)
-            print("T = \(transformY)")
             innerView.transform = CGAffineTransform(translationX: 0, y: transformY)
         case .bottom:
             let transformY = view.frame.size.height-innerView.frame.origin.y
-            print("T = \(transformY)")
             innerView.transform = CGAffineTransform(translationX: 0, y: transformY)
         case .zoom:
             innerView.transform = CGAffineTransform(scaleX: 0.7, y: 0.7)

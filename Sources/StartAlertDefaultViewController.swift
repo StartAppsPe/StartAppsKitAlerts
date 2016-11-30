@@ -13,14 +13,13 @@
     
     open class StartAlertViewButton {
         
-        public typealias StartAlertViewButtonAction = (_ alert: StartAlert, _ sender: AnyObject) -> Void
+        public typealias StartAlertViewButtonAction = (_ alert: StartAlert, _ sender: Any) -> Void
         
         public enum DefaultAction {
             case cancel
             public var action: StartAlertViewButtonAction {
                 return { alert, sender in
-                    // Do nothing, will be dimissed anyway
-                    //alert.dismiss()
+                    alert.dismiss()
                 }
             }
         }
@@ -57,6 +56,28 @@
         
     }
     
+    open class StartAlertViewInput {
+        
+        public typealias StartAlertViewInputCustomize = (_ input: UIControl) -> Void
+        
+        public enum Style {
+            case textField
+        }
+        
+        open var title: String
+        open var style: Style
+        open var customize: StartAlertViewInputCustomize?
+        
+        open var view: UIControl?
+        
+        public init(title: String, style: Style = .textField, customize: StartAlertViewInputCustomize? = nil) {
+            self.title = title
+            self.style = style
+            self.customize = customize
+        }
+        
+    }
+    
     open class StartAlertDefaultViewController: UIViewController, StartAlertPresentable {
         
         public weak var alert: StartAlert!
@@ -64,6 +85,7 @@
         //public var title: String?
         public var message: String?
         
+        public var inputs: [StartAlertViewInput] = []
         public var buttons: [StartAlertViewButton] = []
         
         open override func loadView() {
@@ -102,13 +124,8 @@
             
             var topView = view
             
-            var headerView: UIView?
-            var contentView: UIView?
-            var buttonsView: UIView?
-            
             if let title = title {
-                headerView = UIView()
-                guard let headerView = headerView else { return }
+                let headerView = UIView()
                 headerView.backgroundColor = UIColor.clear
                 headerView.translatesAutoresizingMaskIntoConstraints = false
                 headerView.setContentHuggingPriority(UILayoutPriorityDefaultHigh, for: .vertical)
@@ -146,6 +163,16 @@
                 titleLabel.translatesAutoresizingMaskIntoConstraints = false
                 titleLabel.setContentHuggingPriority(UILayoutPriorityDefaultHigh+1, for: .vertical)
                 headerView.addSubview(titleLabel)
+                
+                switch alert.style {
+                case .top, .bottom, .center, .full:
+                    () // Nothing
+                case .navbar, .ticker:
+                    let color1 = UINavigationBar.appearance().titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
+                    let color2 = UINavigationBar.appearance().tintColor
+                    titleLabel.textColor = color1 ?? color2 ?? UIColor.black
+                }
+                
                 
                 // Add constraints
                 headerView.addConstraint(
@@ -188,8 +215,7 @@
             }
             
             if let message = message {
-                contentView = UIView()
-                guard let contentView = contentView else { return }
+                let contentView = UIView()
                 contentView.backgroundColor = UIColor.clear
                 contentView.translatesAutoresizingMaskIntoConstraints = false
                 view.addSubview(contentView)
@@ -226,6 +252,15 @@
                 messageLabel.translatesAutoresizingMaskIntoConstraints = false
                 messageLabel.setContentHuggingPriority(UILayoutPriorityDefaultLow-1, for: .vertical)
                 contentView.addSubview(messageLabel)
+                
+                switch alert.style {
+                case .top, .bottom, .center, .full:
+                    () // Nothing
+                case .navbar, .ticker:
+                    let color1 = UINavigationBar.appearance().titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
+                    let color2 = UINavigationBar.appearance().tintColor
+                    messageLabel.textColor = color1 ?? color2 ?? UIColor.black
+                }
                 
                 // Add constraints
                 contentView.addConstraint(
@@ -273,9 +308,152 @@
                 topView = contentView
             }
             
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            if inputs.count > 0 {
+                let inputsView = UIView()
+                inputsView.backgroundColor = UIColor.clear
+                inputsView.translatesAutoresizingMaskIntoConstraints = false
+                inputsView.setContentHuggingPriority(UILayoutPriorityDefaultHigh, for: .vertical)
+                view.addSubview(inputsView)
+                
+                // Add constraints
+                view.addConstraint(
+                    NSLayoutConstraint(
+                        item: inputsView, attribute: .top,
+                        relatedBy: .equal,
+                        toItem: topView, attribute: (topView == view ? .top : .bottom),
+                        multiplier: 1.0, constant: 0
+                    )
+                )
+                view.addConstraint(
+                    NSLayoutConstraint(
+                        item: inputsView, attribute: .leading,
+                        relatedBy: .equal,
+                        toItem: view, attribute: .leading,
+                        multiplier: 1.0, constant: 0
+                    )
+                )
+                view.addConstraint(
+                    NSLayoutConstraint(
+                        item: view, attribute: .trailing,
+                        relatedBy: .equal,
+                        toItem: inputsView, attribute: .trailing,
+                        multiplier: 1.0, constant: 0
+                    )
+                )
+                view.addConstraint(
+                    NSLayoutConstraint(
+                        item: inputsView, attribute: .height,
+                        relatedBy: .greaterThanOrEqual,
+                        toItem: nil, attribute: .notAnAttribute,
+                        multiplier: 1.0, constant: 50
+                    )
+                )
+                
+                var beforeView: UIView = inputsView
+                for input in inputs {
+                    
+                    let inputInput: UIControl = UITextField()
+                    inputInput.translatesAutoresizingMaskIntoConstraints = false
+                    inputsView.addSubview(inputInput)
+                    input.view = inputInput
+                    
+                    // Add constraints
+                    inputsView.addConstraint(
+                        NSLayoutConstraint(
+                            item: inputInput, attribute: .top,
+                            relatedBy: .equal,
+                            toItem: beforeView, attribute: (beforeView == inputsView ? .top : .bottom),
+                            multiplier: 1.0, constant: (beforeView == inputsView ? 0 : 10)
+                        )
+                    )
+                    inputsView.addConstraint(
+                        NSLayoutConstraint(
+                            item: inputsView, attribute: .trailing,
+                            relatedBy: .equal,
+                            toItem: inputInput, attribute: .trailing,
+                            multiplier: 1.0, constant: 20
+                        )
+                    )
+                    inputsView.addConstraint(
+                        NSLayoutConstraint(
+                            item: inputInput, attribute: .leading,
+                            relatedBy: .equal,
+                            toItem: inputsView, attribute: .leading,
+                            multiplier: 1.0, constant: 20
+                        )
+                    )
+                    
+                    inputInput.addConstraint(
+                        NSLayoutConstraint(
+                            item: inputInput, attribute: .height,
+                            relatedBy: .equal,
+                            toItem: nil, attribute: .notAnAttribute,
+                            multiplier: 1.0, constant: 50
+                        )
+                    )
+                    
+                    switch input.style {
+                    case .textField:
+                        let inputInput = inputInput as! UITextField
+                        inputInput.placeholder = input.title
+                        inputInput.font = UIFont.systemFont(ofSize: 16)
+                        inputInput.textColor = UIColor.black
+                        inputInput.textAlignment = .center
+                        inputInput.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
+                        inputInput.cornerRadius = 4
+                    }
+                    
+                    input.customize?(inputInput)
+                    
+                    beforeView = inputInput
+                }
+                
+                inputsView.addConstraint(
+                    NSLayoutConstraint(
+                        item: inputsView, attribute: .bottom,
+                        relatedBy: .equal,
+                        toItem: beforeView, attribute: .bottom,
+                        multiplier: 1.0, constant: 20
+                    )
+                )
+                
+                topView = inputsView
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             if buttons.count > 0 {
-                buttonsView = UIView()
-                guard let buttonsView = buttonsView else { return }
+                let buttonsView = UIView()
                 buttonsView.backgroundColor = UIColor.clear
                 buttonsView.translatesAutoresizingMaskIntoConstraints = false
                 buttonsView.setContentHuggingPriority(UILayoutPriorityDefaultHigh, for: .vertical)
@@ -315,7 +493,7 @@
                     )
                 )
                 
-                var leftView: UIView = buttonsView
+                var beforeView: UIView = buttonsView
                 for button in buttons {
                     
                     let buttonButton = UIButton()
@@ -346,16 +524,16 @@
                             NSLayoutConstraint(
                                 item: buttonButton, attribute: .leading,
                                 relatedBy: .equal,
-                                toItem: leftView, attribute: (leftView == buttonsView ? .leading : .trailing),
-                                multiplier: 1.0, constant: (leftView == buttonsView ? 0 : 1)
+                                toItem: beforeView, attribute: (beforeView == buttonsView ? .leading : .trailing),
+                                multiplier: 1.0, constant: (beforeView == buttonsView ? 0 : 1)
                             )
                         )
-                        if leftView != buttonsView {
+                        if beforeView != buttonsView {
                             buttonsView.addConstraint(
                                 NSLayoutConstraint(
                                     item: buttonButton, attribute: .width,
                                     relatedBy: .equal,
-                                    toItem: leftView, attribute: .width,
+                                    toItem: beforeView, attribute: .width,
                                     multiplier: 1.0, constant: 0
                                 )
                             )
@@ -368,8 +546,8 @@
                             NSLayoutConstraint(
                                 item: buttonButton, attribute: .top,
                                 relatedBy: .equal,
-                                toItem: leftView, attribute: (leftView == buttonsView ? .top : .bottom),
-                                multiplier: 1.0, constant: (leftView == buttonsView ? 0 : 1)
+                                toItem: beforeView, attribute: (beforeView == buttonsView ? .top : .bottom),
+                                multiplier: 1.0, constant: (beforeView == buttonsView ? 0 : 1)
                             )
                         )
                         buttonsView.addConstraint(
@@ -388,12 +566,12 @@
                                 multiplier: 1.0, constant: 0
                             )
                         )
-                        if leftView != buttonsView {
+                        if beforeView != buttonsView {
                             buttonsView.addConstraint(
                                 NSLayoutConstraint(
                                     item: buttonButton, attribute: .height,
                                     relatedBy: .equal,
-                                    toItem: leftView, attribute: .height,
+                                    toItem: beforeView, attribute: .height,
                                     multiplier: 1.0, constant: 0
                                 )
                             )
@@ -414,22 +592,21 @@
                     buttonButton.setAction({ (sender) in
                         guard let alert = self.alert else { return }
                         button.action(alert, sender)
-                        alert.dismiss()
                     })
                     buttonButton.titleFont = UIFont.boldSystemFont(ofSize: 16)
                     buttonButton.textColor = UIColor.black
                     buttonButton.backgroundColor = button.style.backgroundColor
                     
-                    leftView = buttonButton
+                    beforeView = buttonButton
                 }
                 
                 if buttons.count <= 2 {
-                
+                    
                     buttonsView.addConstraint(
                         NSLayoutConstraint(
                             item: buttonsView, attribute: .trailing,
                             relatedBy: .equal,
-                            toItem: leftView, attribute: .trailing,
+                            toItem: beforeView, attribute: .trailing,
                             multiplier: 1.0, constant: 0
                         )
                     )
@@ -440,7 +617,7 @@
                         NSLayoutConstraint(
                             item: buttonsView, attribute: .bottom,
                             relatedBy: .equal,
-                            toItem: leftView, attribute: .bottom,
+                            toItem: beforeView, attribute: .bottom,
                             multiplier: 1.0, constant: 0
                         )
                     )

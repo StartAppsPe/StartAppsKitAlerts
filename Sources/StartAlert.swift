@@ -39,6 +39,10 @@ public class StartAlert {
     
     public var rootViewController: UIViewController!
     
+    public var defaultRootViewController: StartAlertDefaultViewController? {
+        return rootViewController as? StartAlertDefaultViewController
+    }
+    
     public init(style: Style = .ticker, overlay: Overlay = .blur, animation: Animation = .top) {
         self.style = style
         self.overlay = overlay
