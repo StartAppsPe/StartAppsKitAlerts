@@ -591,7 +591,7 @@
                     buttonButton.title = button.title
                     buttonButton.setAction({ (sender) in
                         guard let alert = self.alert else { return }
-                        button.action(alert, sender)
+                        button.action(alert, sender as AnyObject)
                     })
                     buttonButton.titleFont = UIFont.boldSystemFont(ofSize: 16)
                     buttonButton.textColor = UIColor.black
