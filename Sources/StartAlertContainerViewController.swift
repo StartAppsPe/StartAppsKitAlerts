@@ -20,6 +20,8 @@ open class StartAlertContainerViewController: UIViewController {
     weak var alert: StartAlert!
     
     var overlayView: UIVisualEffectView!
+    var scrollView: UIScrollView!
+    var scrollInnerView: UIView!
     var innerView: UIView!
     var innerInnerView: UIView!
     
@@ -52,17 +54,49 @@ open class StartAlertContainerViewController: UIViewController {
     open override func loadView() {
         super.loadView()
         
-        view = UIView()
-        view.backgroundColor = UIColor.clear
+        self.view = UIView()
+        self.view.backgroundColor = UIColor.clear
         
         overlayView = UIVisualEffectView()
+        overlayView.translatesAutoresizingMaskIntoConstraints = false
         overlayView.backgroundColor = UIColor.clear
-        view.fillWithSubview(overlayView)
+        self.view.fillWithSubview(overlayView)
         
         let vibrancyView = UIVisualEffectView()
+        vibrancyView.translatesAutoresizingMaskIntoConstraints = false
         vibrancyView.effect = UIVibrancyEffect()
         vibrancyView.backgroundColor = UIColor.clear
         overlayView.fillWithSubview(vibrancyView)
+        
+        scrollView = UIScrollView()
+        scrollView.backgroundColor = UIColor.clear
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.fillWithSubview(scrollView)
+        
+        scrollInnerView = UIView()
+        scrollInnerView.backgroundColor = UIColor.clear
+        scrollInnerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.fillWithSubview(scrollInnerView)
+        
+        scrollView.addConstraint(
+            NSLayoutConstraint(
+                item: scrollInnerView, attribute: .width,
+                relatedBy: .equal,
+                toItem: scrollView, attribute: .width,
+                multiplier: 1.0, constant: 0.0
+            )
+        )
+        
+        scrollView.addConstraint(
+            NSLayoutConstraint(
+                item: scrollInnerView, attribute: .height,
+                relatedBy: .equal,
+                toItem: scrollView, attribute: .height,
+                multiplier: 1.0, constant: 0.0
+            )
+        )
+        
+        let view = scrollInnerView!
         
         innerView = UIView()
         innerView.backgroundColor = UIColor.clear
@@ -228,6 +262,30 @@ open class StartAlertContainerViewController: UIViewController {
         }
         
         
+    }
+    
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        //Register for Notifications
+        NotificationCenter.default.addObserver(forName: .UIKeyboardWillShow, object: nil, queue: nil) { (notification) -> Void in
+            self.keyboardShownChanged(show: true,  userInfo: (notification as NSNotification).userInfo)
+        }
+        NotificationCenter.default.addObserver(forName: .UIKeyboardWillHide, object: nil, queue: nil) { (notification) -> Void in
+            self.keyboardShownChanged(show: false, userInfo: (notification as NSNotification).userInfo)
+        }
+    }
+    
+    func keyboardShownChanged(show: Bool, userInfo: [AnyHashable: Any]?) {
+        let keyboardHeight       = (show ? ((userInfo?[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue.size.height) : 0)
+        let animationDuration    = (userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.25
+        var options = UIViewAnimationOptions()
+        if let animationCurveRaw = (userInfo?[UIKeyboardAnimationCurveUserInfoKey] as? NSNumber)?.uintValue {
+            options = UIViewAnimationOptions(rawValue: UInt(animationCurveRaw << 16))
+        }
+        UIView.animate(withDuration: animationDuration, delay: 0.0, options: options, animations: {
+        self.scrollView.setContentOffset(CGPoint(x: 0, y: keyboardHeight/2), animated: false)
+        }, completion: nil)
     }
     
     open func setMoveToHidden() {
