@@ -9,9 +9,12 @@
 #if os(iOS)
     
     import UIKit
-    import StartAppsKitExtensions
     
     open class StartAlertViewButton {
+        
+        public static var highlightedColor: UIColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.15)
+        public static var destructiveColor: UIColor = UIColor(red: 1, green: 0, blue: 0, alpha: 0.70)
+        public static var normalColor: UIColor      = UIColor(red: 0, green: 0, blue: 0, alpha: 0.05)
         
         public typealias StartAlertViewButtonAction = (_ alert: StartAlert, _ sender: Any) -> Void
         
@@ -29,11 +32,11 @@
             public var backgroundColor: UIColor {
                 switch self {
                 case .highlighted:
-                    return UIColor.black.with(alpha: 0.15)
+                    return highlightedColor
                 case .destructive:
-                    return UIColor.flatLightRed.with(alpha: 0.7)
+                    return destructiveColor
                 case .normal:
-                    return UIColor.black.with(alpha: 0.05)
+                    return normalColor
                 }
             }
         }
@@ -128,7 +131,7 @@
                 let headerView = UIView()
                 headerView.backgroundColor = UIColor.clear
                 headerView.translatesAutoresizingMaskIntoConstraints = false
-                headerView.setContentHuggingPriority(UILayoutPriorityDefaultHigh, for: .vertical)
+                headerView.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: .vertical)
                 view.addSubview(headerView)
                 
                 // Add constraints
@@ -161,14 +164,14 @@
                 titleLabel.numberOfLines = 0
                 titleLabel.textAlignment = .center
                 titleLabel.translatesAutoresizingMaskIntoConstraints = false
-                titleLabel.setContentHuggingPriority(UILayoutPriorityDefaultHigh+1, for: .vertical)
+                titleLabel.setContentHuggingPriority(UILayoutPriority(rawValue: UILayoutPriority.RawValue(Int(UILayoutPriority.defaultHigh.rawValue)+1)), for: .vertical)
                 headerView.addSubview(titleLabel)
                 
                 switch alert.style {
                 case .top, .bottom, .center, .full:
                     () // Nothing
                 case .navbar, .ticker:
-                    let color1 = UINavigationBar.appearance().titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
+                    let color1 = UINavigationBar.appearance().titleTextAttributes?[NSAttributedStringKey.foregroundColor] as? UIColor
                     let color2 = UINavigationBar.appearance().tintColor
                     titleLabel.textColor = color1 ?? color2 ?? UIColor.black
                 }
@@ -250,14 +253,14 @@
                 messageLabel.numberOfLines = 0
                 messageLabel.textAlignment = .center
                 messageLabel.translatesAutoresizingMaskIntoConstraints = false
-                messageLabel.setContentHuggingPriority(UILayoutPriorityDefaultLow-1, for: .vertical)
+                messageLabel.setContentHuggingPriority(UILayoutPriority(rawValue: UILayoutPriority.RawValue(Int(UILayoutPriority.defaultLow.rawValue)-1)), for: .vertical)
                 contentView.addSubview(messageLabel)
                 
                 switch alert.style {
                 case .top, .bottom, .center, .full:
                     () // Nothing
                 case .navbar, .ticker:
-                    let color1 = UINavigationBar.appearance().titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
+                    let color1 = UINavigationBar.appearance().titleTextAttributes?[NSAttributedStringKey.foregroundColor] as? UIColor
                     let color2 = UINavigationBar.appearance().tintColor
                     messageLabel.textColor = color1 ?? color2 ?? UIColor.black
                 }
@@ -321,7 +324,7 @@
                 let inputsView = UIView()
                 inputsView.backgroundColor = UIColor.clear
                 inputsView.translatesAutoresizingMaskIntoConstraints = false
-                inputsView.setContentHuggingPriority(UILayoutPriorityDefaultHigh, for: .vertical)
+                inputsView.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: .vertical)
                 view.addSubview(inputsView)
                 
                 // Add constraints
@@ -409,7 +412,8 @@
                         inputInput.textColor = UIColor.black
                         inputInput.textAlignment = .center
                         inputInput.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
-                        inputInput.cornerRadius = 4
+                        inputInput.layer.cornerRadius = 4
+                        inputInput.layer.masksToBounds = true
                     }
                     
                     input.customize?(inputInput)
@@ -456,7 +460,7 @@
                 let buttonsView = UIView()
                 buttonsView.backgroundColor = UIColor.clear
                 buttonsView.translatesAutoresizingMaskIntoConstraints = false
-                buttonsView.setContentHuggingPriority(UILayoutPriorityDefaultHigh, for: .vertical)
+                buttonsView.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: .vertical)
                 view.addSubview(buttonsView)
                 
                 // Add constraints
@@ -588,13 +592,13 @@
                         
                     }
                     
-                    buttonButton.title = button.title
+                    buttonButton.setTitle(button.title, for: .normal)
                     buttonButton.setAction({ (sender) in
                         guard let alert = self.alert else { return }
                         button.action(alert, sender as AnyObject)
                     })
-                    buttonButton.titleFont = UIFont.boldSystemFont(ofSize: 16)
-                    buttonButton.textColor = UIColor.black
+                    buttonButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+                    buttonButton.setTitleColor(UIColor.black, for: .normal)
                     buttonButton.backgroundColor = button.style.backgroundColor
                     
                     beforeView = buttonButton
@@ -637,6 +641,47 @@
                 )
             )
             
+        }
+        
+    }
+    
+    
+    fileprivate extension UIButton {
+        
+        fileprivate func setAction(_ action: @escaping ((_ sender: Any) -> Void)) {
+            setAction(controlEvents: .touchUpInside, action: action)
+        }
+        
+    }
+    
+    private var _dhsv: UInt8 = 0
+    private final class ClosureWrapper {
+        fileprivate var action: (_ sender: Any) -> Void
+        init(action: @escaping (_ sender: Any) -> Void) {
+            self.action = action
+        }
+    }
+    
+    fileprivate extension UIControl {
+        
+        fileprivate func setAction(controlEvents: UIControlEvents, action: ((_ sender: Any) -> Void)?) {
+            if let action = action {
+                self.removeTarget(self, action: nil, for: controlEvents)
+                self.addTarget(self, action: #selector(UIControl.performAction), for: controlEvents)
+                self.closuresWrapper = ClosureWrapper(action: action)
+            } else {
+                self.removeTarget(self, action: nil, for: controlEvents)
+                self.closuresWrapper = nil
+            }
+        }
+        
+        @objc fileprivate func performAction() {
+            self.closuresWrapper?.action(self)
+        }
+        
+        fileprivate var closuresWrapper: ClosureWrapper? {
+            get { return objc_getAssociatedObject(self, &_dhsv) as? ClosureWrapper }
+            set { objc_setAssociatedObject(self, &_dhsv, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
         }
         
     }

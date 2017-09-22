@@ -9,7 +9,6 @@
 #if os(iOS)
     
 import Foundation
-import StartAppsKitExtensions
 
 public extension StartAlert {
     

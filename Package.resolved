@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "StartAppsKitExtensions",
+        "repositoryURL": "https://github.com/StartAppsPe/StartAppsKitExtensions.git",
+        "state": {
+          "branch": null,
+          "revision": "56a28baf77a94558de1398a6e6dac842442d711d",
+          "version": "2.0.6"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
