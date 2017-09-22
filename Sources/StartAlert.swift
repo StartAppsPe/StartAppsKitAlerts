@@ -66,7 +66,7 @@
             newWindowVC.prepareEntrance(window: alertWindow!)
             newWindowVC.performEntrance(animated: animated) {
                 if let autoDismissTime = self.autoDismissTime {
-                    self.autoDismissTimer = Timer.scheduledTimer(withTimeInterval: autoDismissTime, repeats: false, block: { _ in
+                    self.autoDismissTimer = Timer.scheduledTimer(timeInterval: autoDismissTime, repeats: false, actions: { _ in
                         self.dismiss(animated: animated, completion: completion)
                     })
                 } else {
@@ -100,5 +100,59 @@
         }
         
     }
+    
+    
+    fileprivate extension Timer {
+        
+        /********************************************************************************************************/
+        // MARK: Closure Methods
+        /********************************************************************************************************/
+        
+        fileprivate typealias TimerCallback = (Timer) -> Void
+        
+        private class TimerCallbackHolder : NSObject {
+            var callback: TimerCallback
+            
+            init(callback: @escaping TimerCallback) {
+                self.callback = callback
+            }
+            
+            @objc func tick(_ timer: Timer) {
+                callback(timer)
+            }
+        }
+        
+        @discardableResult
+        fileprivate convenience init(timeInterval interval: TimeInterval, repeats: Bool, actions: @escaping TimerCallback) {
+            #if os(iOS) || os(macOS)
+                if #available(iOS 10.0, OSX 10.12, *) {
+                    self.init(timeInterval: interval, repeats: repeats, block: actions)
+                } else {
+                    let holder = TimerCallbackHolder(callback: actions)
+                    holder.callback = actions
+                    self.init(timeInterval: interval, target: holder, selector: #selector(TimerCallbackHolder.tick(_:)), userInfo: nil, repeats: repeats)
+                }
+            #else
+                self.init(timeInterval: interval, repeats: repeats, block: actions)
+            #endif
+        }
+        
+        @discardableResult
+        fileprivate class func scheduledTimer(timeInterval interval: TimeInterval, repeats: Bool, actions: @escaping TimerCallback) -> Timer {
+            #if os(iOS) || os(macOS)
+                if #available(iOS 10.0, OSX 10.12, *) {
+                    return self.scheduledTimer(withTimeInterval: interval, repeats: repeats, block: actions)
+                } else {
+                    let holder = TimerCallbackHolder(callback: actions)
+                    holder.callback = actions
+                    return self.scheduledTimer(timeInterval: interval, target: holder, selector: #selector(TimerCallbackHolder.tick(_:)), userInfo: nil, repeats: repeats)
+                }
+            #else
+                return self.scheduledTimer(withTimeInterval: interval, repeats: repeats, block: actions)
+            #endif
+        }
+        
+    }
+
     
 #endif
