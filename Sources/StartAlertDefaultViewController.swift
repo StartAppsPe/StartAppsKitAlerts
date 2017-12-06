@@ -593,7 +593,7 @@
                     }
                     
                     buttonButton.setTitle(button.title, for: .normal)
-                    buttonButton.setAction({ (sender) in
+                    buttonButton._alertSetAction({ (sender) in
                         guard let alert = self.alert else { return }
                         button.action(alert, sender as AnyObject)
                     })
@@ -648,15 +648,15 @@
     
     fileprivate extension UIButton {
         
-        fileprivate func setAction(_ action: @escaping ((_ sender: Any) -> Void)) {
-            setAction(controlEvents: .touchUpInside, action: action)
+        fileprivate func _alertSetAction(_ action: @escaping ((_ sender: Any) -> Void)) {
+            _alertSetAction(controlEvents: .touchUpInside, action: action)
         }
         
     }
     
-    private var _dhsv: UInt8 = 0
-    private final class ClosureWrapper {
-        fileprivate var action: (_ sender: Any) -> Void
+    private var _ddpsv: UInt8 = 0
+    private final class _AlertClosureWrapper {
+        fileprivate let action: (_ sender: Any) -> Void
         init(action: @escaping (_ sender: Any) -> Void) {
             self.action = action
         }
@@ -664,24 +664,24 @@
     
     fileprivate extension UIControl {
         
-        fileprivate func setAction(controlEvents: UIControlEvents, action: ((_ sender: Any) -> Void)?) {
+        fileprivate func _alertSetAction(controlEvents: UIControlEvents, action: ((_ sender: Any) -> Void)?) {
             if let action = action {
                 self.removeTarget(self, action: nil, for: controlEvents)
-                self.addTarget(self, action: #selector(UIControl.performAction), for: controlEvents)
-                self.closuresWrapper = ClosureWrapper(action: action)
+                self.addTarget(self, action: #selector(_alertPerformAction), for: controlEvents)
+                self._alertClosuresWrapper = _AlertClosureWrapper(action: action)
             } else {
                 self.removeTarget(self, action: nil, for: controlEvents)
-                self.closuresWrapper = nil
+                self._alertClosuresWrapper = nil
             }
         }
         
-        @objc fileprivate func performAction() {
-            self.closuresWrapper?.action(self)
+        @objc fileprivate func _alertPerformAction() {
+            self._alertClosuresWrapper?.action(self)
         }
         
-        fileprivate var closuresWrapper: ClosureWrapper? {
-            get { return objc_getAssociatedObject(self, &_dhsv) as? ClosureWrapper }
-            set { objc_setAssociatedObject(self, &_dhsv, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+        fileprivate var _alertClosuresWrapper: _AlertClosureWrapper? {
+            get { return objc_getAssociatedObject(self, &_ddpsv) as? _AlertClosureWrapper }
+            set { objc_setAssociatedObject(self, &_ddpsv, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
         }
         
     }
