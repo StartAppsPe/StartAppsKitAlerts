@@ -102,7 +102,7 @@
                 view.fillWithSubview(backgroundView)
                 let vibrancyView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
                 vibrancyView.effect = UIVibrancyEffect()
-                backgroundView.fillWithSubview(vibrancyView)
+                backgroundView.contentView.fillWithSubview(vibrancyView)
             case .navbar, .ticker:
                 view.backgroundColor = UINavigationBar.appearance().barTintColor ?? UIColor(white: 0.9686, alpha: 1.0)
             }

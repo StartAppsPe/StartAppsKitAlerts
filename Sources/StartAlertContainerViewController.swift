@@ -65,7 +65,7 @@
             vibrancyView.translatesAutoresizingMaskIntoConstraints = false
             vibrancyView.effect = UIVibrancyEffect()
             vibrancyView.backgroundColor = UIColor.clear
-            overlayView.fillWithSubview(vibrancyView)
+            overlayView.contentView.fillWithSubview(vibrancyView)
             
             scrollView = UIScrollView()
             scrollView.backgroundColor = UIColor.clear
