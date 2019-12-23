@@ -11,7 +11,7 @@
     import UIKit
     
     public protocol StartAlertPresentable: class {
-        weak var alert: StartAlert! { get set }
+        var alert: StartAlert! { get set }
     }
     
     open class StartAlertContainerViewController: UIViewController {
@@ -79,18 +79,18 @@
             
             scrollView.addConstraint(
                 NSLayoutConstraint(
-                    item: scrollInnerView, attribute: .width,
+                    item: scrollInnerView!, attribute: .width,
                     relatedBy: .equal,
-                    toItem: scrollView, attribute: .width,
+                    toItem: scrollView!, attribute: .width,
                     multiplier: 1.0, constant: 0.0
                 )
             )
             
             scrollView.addConstraint(
                 NSLayoutConstraint(
-                    item: scrollInnerView, attribute: .height,
+                    item: scrollInnerView!, attribute: .height,
                     relatedBy: .equal,
-                    toItem: scrollView, attribute: .height,
+                    toItem: scrollView!, attribute: .height,
                     multiplier: 1.0, constant: 0.0
                 )
             )
@@ -105,7 +105,7 @@
             // Add constraints
             view.addConstraint(
                 NSLayoutConstraint(
-                    item: innerView, attribute: .top,
+                    item: innerView!, attribute: .top,
                     relatedBy: .greaterThanOrEqual,
                     toItem: view, attribute: .top,
                     multiplier: 1.0, constant: margin
@@ -115,13 +115,13 @@
                 NSLayoutConstraint(
                     item: view, attribute: .bottom,
                     relatedBy: .greaterThanOrEqual,
-                    toItem: innerView, attribute: .bottom,
+                    toItem: innerView!, attribute: .bottom,
                     multiplier: 1.0, constant: margin
                 )
             )
             view.addConstraint(
                 NSLayoutConstraint(
-                    item: innerView, attribute: .leading,
+                    item: innerView!, attribute: .leading,
                     relatedBy: .greaterThanOrEqual,
                     toItem: view, attribute: .leading,
                     multiplier: 1.0, constant: margin
@@ -131,7 +131,7 @@
                 NSLayoutConstraint(
                     item: view, attribute: .trailing,
                     relatedBy: .greaterThanOrEqual,
-                    toItem: innerView, attribute: .trailing,
+                    toItem: innerView!, attribute: .trailing,
                     multiplier: 1.0, constant: margin
                 )
             )
@@ -139,14 +139,14 @@
                 NSLayoutConstraint(
                     item: view, attribute: .centerX,
                     relatedBy: .equal,
-                    toItem: innerView, attribute: .centerX,
+                    toItem: innerView!, attribute: .centerX,
                     multiplier: 1.0, constant: 0
                 )
             )
             
             view.addConstraint(
                 NSLayoutConstraint(
-                    item: innerView, attribute: .width,
+                    item: innerView!, attribute: .width,
                     relatedBy: .lessThanOrEqual,
                     toItem: nil, attribute: .notAnAttribute,
                     multiplier: 1.0, constant: 400.0
@@ -154,7 +154,7 @@
             )
             
             let maximizeWidth = NSLayoutConstraint(
-                item: innerView, attribute: .width,
+                item: innerView!, attribute: .width,
                 relatedBy: .equal,
                 toItem: nil, attribute: .notAnAttribute,
                 multiplier: 1.0, constant: 400.0
@@ -168,14 +168,14 @@
                     NSLayoutConstraint(
                         item: view, attribute: .centerY,
                         relatedBy: .equal,
-                        toItem: innerView, attribute: .centerY,
+                        toItem: innerView!, attribute: .centerY,
                         multiplier: 1.0, constant: 0.0
                     )
                 )
             case .top:
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: innerView, attribute: .top,
+                        item: innerView!, attribute: .top,
                         relatedBy: .equal,
                         toItem: view, attribute: .top,
                         multiplier: 1.0, constant: margin
@@ -184,7 +184,7 @@
             case .ticker:
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: innerView, attribute: .top,
+                        item: innerView!, attribute: .top,
                         relatedBy: .equal,
                         toItem: view, attribute: .top,
                         multiplier: 1.0, constant: margin
@@ -192,7 +192,7 @@
                 )
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: innerView, attribute: .height,
+                        item: innerView!, attribute: .height,
                         relatedBy: .equal,
                         toItem: nil, attribute: .notAnAttribute,
                         multiplier: 1.0, constant: 20.0
@@ -201,7 +201,7 @@
             case .navbar:
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: innerView, attribute: .top,
+                        item: innerView!, attribute: .top,
                         relatedBy: .equal,
                         toItem: view, attribute: .top,
                         multiplier: 1.0, constant: margin
@@ -209,7 +209,7 @@
                 )
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: innerView, attribute: .height,
+                        item: innerView!, attribute: .height,
                         relatedBy: .equal,
                         toItem: nil, attribute: .notAnAttribute,
                         multiplier: 1.0, constant: 64.0
@@ -218,7 +218,7 @@
             case .bottom:
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: innerView, attribute: .bottom,
+                        item: innerView!, attribute: .bottom,
                         relatedBy: .equal,
                         toItem: view, attribute: .bottom,
                         multiplier: 1.0, constant: margin
@@ -227,7 +227,7 @@
             case .full:
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: innerView, attribute: .top,
+                        item: innerView!, attribute: .top,
                         relatedBy: .equal,
                         toItem: view, attribute: .top,
                         multiplier: 1.0, constant: margin
@@ -235,7 +235,7 @@
                 )
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: innerView, attribute: .bottom,
+                        item: innerView!, attribute: .bottom,
                         relatedBy: .equal,
                         toItem: view, attribute: .bottom,
                         multiplier: 1.0, constant: margin
@@ -260,28 +260,26 @@
             case .navbar, .ticker:
                 break
             }
-            
-            
         }
         
         open override func viewDidAppear(_ animated: Bool) {
             super.viewDidAppear(animated)
             
             //Register for Notifications
-            NotificationCenter.default.addObserver(forName: .UIKeyboardWillShow, object: nil, queue: nil) { (notification) -> Void in
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: nil) { (notification) -> Void in
                 self.keyboardShownChanged(show: true,  userInfo: (notification as NSNotification).userInfo)
             }
-            NotificationCenter.default.addObserver(forName: .UIKeyboardWillHide, object: nil, queue: nil) { (notification) -> Void in
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: nil) { (notification) -> Void in
                 self.keyboardShownChanged(show: false, userInfo: (notification as NSNotification).userInfo)
             }
         }
         
         func keyboardShownChanged(show: Bool, userInfo: [AnyHashable: Any]?) {
-            let keyboardHeight       = (show ? ((userInfo?[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue.size.height) : 0)
-            let animationDuration    = (userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.25
-            var options = UIViewAnimationOptions()
-            if let animationCurveRaw = (userInfo?[UIKeyboardAnimationCurveUserInfoKey] as? NSNumber)?.uintValue {
-                options = UIViewAnimationOptions(rawValue: UInt(animationCurveRaw << 16))
+            let keyboardHeight       = (show ? ((userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue.size.height) : 0)
+            let animationDuration    = (userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.25
+            var options = UIView.AnimationOptions()
+            if let animationCurveRaw = (userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber)?.uintValue {
+                options = UIView.AnimationOptions(rawValue: UInt(animationCurveRaw << 16))
             }
             UIView.animate(withDuration: animationDuration, delay: 0.0, options: options, animations: {
                 self.scrollView.setContentOffset(CGPoint(x: 0, y: keyboardHeight/2), animated: false)
@@ -436,31 +434,26 @@
             layer.beginTime = layer.convertTime(CACurrentMediaTime(), from: nil) - pausedTime
         }
     }
-    
-    
-    
-    
-    
-    internal extension UIViewController {
+
+    extension UIViewController {
         
         internal func insertChild(viewController: UIViewController, inView: UIView) {
-            addChildViewController(viewController)
-            viewController.willMove(toParentViewController: self)
+            addChild(viewController)
+            viewController.willMove(toParent: self)
             inView.fillWithSubview(viewController.view)
-            viewController.didMove(toParentViewController: self)
+            viewController.didMove(toParent: self)
         }
         
         internal func removeChild(viewController: UIViewController) {
-            viewController.removeFromParentViewController()
-            viewController.willMove(toParentViewController: nil)
+            viewController.removeFromParent()
+            viewController.willMove(toParent: nil)
             viewController.view?.removeFromSuperview()
-            viewController.didMove(toParentViewController: nil)
+            viewController.didMove(toParent: nil)
         }
         
     }
-    
-    
-    internal extension UIView {
+
+    extension UIView {
         
         internal func fillWithSubview(_ view: UIView, margin: CGFloat = 0.0) {
             

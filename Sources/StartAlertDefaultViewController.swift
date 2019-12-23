@@ -147,13 +147,13 @@
                     NSLayoutConstraint(
                         item: headerView, attribute: .leading,
                         relatedBy: .equal,
-                        toItem: view, attribute: .leading,
+                        toItem: view!, attribute: .leading,
                         multiplier: 1.0, constant: 0
                     )
                 )
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: view, attribute: .trailing,
+                        item: view!, attribute: .trailing,
                         relatedBy: .equal,
                         toItem: headerView, attribute: .trailing,
                         multiplier: 1.0, constant: 0
@@ -171,7 +171,7 @@
                 case .top, .bottom, .center, .full:
                     () // Nothing
                 case .navbar, .ticker:
-                    let color1 = UINavigationBar.appearance().titleTextAttributes?[NSAttributedStringKey.foregroundColor] as? UIColor
+                    let color1 = UINavigationBar.appearance().titleTextAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor
                     let color2 = UINavigationBar.appearance().tintColor
                     titleLabel.textColor = color1 ?? color2 ?? UIColor.black
                 }
@@ -236,13 +236,13 @@
                     NSLayoutConstraint(
                         item: contentView, attribute: .leading,
                         relatedBy: .equal,
-                        toItem: view, attribute: .leading,
+                        toItem: view!, attribute: .leading,
                         multiplier: 1.0, constant: 0
                     )
                 )
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: view, attribute: .trailing,
+                        item: view!, attribute: .trailing,
                         relatedBy: .equal,
                         toItem: contentView, attribute: .trailing,
                         multiplier: 1.0, constant: 0
@@ -260,7 +260,7 @@
                 case .top, .bottom, .center, .full:
                     () // Nothing
                 case .navbar, .ticker:
-                    let color1 = UINavigationBar.appearance().titleTextAttributes?[NSAttributedStringKey.foregroundColor] as? UIColor
+                    let color1 = UINavigationBar.appearance().titleTextAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor
                     let color2 = UINavigationBar.appearance().tintColor
                     messageLabel.textColor = color1 ?? color2 ?? UIColor.black
                 }
@@ -340,13 +340,13 @@
                     NSLayoutConstraint(
                         item: inputsView, attribute: .leading,
                         relatedBy: .equal,
-                        toItem: view, attribute: .leading,
+                        toItem: view!, attribute: .leading,
                         multiplier: 1.0, constant: 0
                     )
                 )
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: view, attribute: .trailing,
+                        item: view!, attribute: .trailing,
                         relatedBy: .equal,
                         toItem: inputsView, attribute: .trailing,
                         multiplier: 1.0, constant: 0
@@ -476,13 +476,13 @@
                     NSLayoutConstraint(
                         item: buttonsView, attribute: .leading,
                         relatedBy: .equal,
-                        toItem: view, attribute: .leading,
+                        toItem: view!, attribute: .leading,
                         multiplier: 1.0, constant: 0
                     )
                 )
                 view.addConstraint(
                     NSLayoutConstraint(
-                        item: view, attribute: .trailing,
+                        item: view!, attribute: .trailing,
                         relatedBy: .equal,
                         toItem: buttonsView, attribute: .trailing,
                         multiplier: 1.0, constant: 0
@@ -634,7 +634,7 @@
             
             view.addConstraint(
                 NSLayoutConstraint(
-                    item: view, attribute: .bottom,
+                    item: view!, attribute: .bottom,
                     relatedBy: .equal,
                     toItem: topView, attribute: .bottom,
                     multiplier: 1.0, constant: 0
@@ -646,7 +646,7 @@
     }
     
     
-    fileprivate extension UIButton {
+    extension UIButton {
         
         fileprivate func _alertSetAction(_ action: @escaping ((_ sender: Any) -> Void)) {
             _alertSetAction(controlEvents: .touchUpInside, action: action)
@@ -662,9 +662,9 @@
         }
     }
     
-    fileprivate extension UIControl {
+    extension UIControl {
         
-        fileprivate func _alertSetAction(controlEvents: UIControlEvents, action: ((_ sender: Any) -> Void)?) {
+        fileprivate func _alertSetAction(controlEvents: UIControl.Event, action: ((_ sender: Any) -> Void)?) {
             if let action = action {
                 self.removeTarget(self, action: nil, for: controlEvents)
                 self.addTarget(self, action: #selector(_alertPerformAction), for: controlEvents)

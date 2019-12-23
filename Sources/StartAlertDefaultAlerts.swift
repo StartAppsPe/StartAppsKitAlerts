@@ -10,7 +10,7 @@
     
 import Foundation
 
-public extension StartAlert {
+extension StartAlert {
     
     public class func full(title: String?, message: String?, dismissTitle: String = "OK") -> StartAlert {
         let innerAlert = StartAlertDefaultViewController()

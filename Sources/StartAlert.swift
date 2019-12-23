@@ -58,7 +58,7 @@
             let window = UIApplication.shared.keyWindow!
             alertWindow = UIWindow(frame: window.frame)
             alertWindow!.backgroundColor = UIColor.clear
-            alertWindow!.windowLevel = UIWindowLevelAlert
+            alertWindow!.windowLevel = UIWindow.Level.alert
             let newWindowVC = StartAlertContainerViewController()
             newWindowVC.alert = self
             alertWindow!.rootViewController = newWindowVC
@@ -102,7 +102,7 @@
     }
     
     
-    fileprivate extension Timer {
+    extension Timer {
         
         /********************************************************************************************************/
         // MARK: Closure Methods
